@@ -1,101 +1,96 @@
+import json, os
 
-import json,os
-print('\033[1m','\033[91m',"WELCOME TO CRUD OPERATION",'\033[0m')
-while True:
-    try:
-        print()
-        print('\033[33m',"press 1 for create \n press 2 for read \n press 3 for update \n press 4 for delete \n press 5 for exit",'\033[0m')
-        print()
-        def create():
-            if os.path.exists("crud.json"):
-                a = input("Enter your no.number: ")
-                if len(a) == 10:
-                    with open("crud.json","r") as obj1:
-                        if obj1.read() == "":
-                            d1 ={}
-                        else:
-                            obj1.seek(0)
-                            d1 = json.load(obj1)
-                        d1[a]=({"name":input("Enter your name: "),
-                                "email":input("Enter your email: "),"address":input("Enter your address: ")})
-                        with open("crud.json","w") as obj1:
-                            json.dump(d1,obj1,indent=4)
-                            print()
-                            print('\033[35m'," Your info created successfully ",'\033[0m')
-                else:
-                    print()
-                    print('\033[35m',"Please enter valid mo.number: ",'\033[0m')
-                    create()
+def create(id):
+    all_data = []
+    data = {
+        "id" : id,
+        "username": input("enter username: "),
+        "Email": input("enter email:"),
+        "password": input("enter password:")
+    }
+
+    with open("crud.json", "r") as f:
+        all_data = json.load(f)
+
+    all_data.append(data)
+    with open("crud.json", "w") as f:
+        json.dump(all_data, f, indent=4)
+    print("data inserted successfully!")
+ 
+
+def read_by_Id():
+    if os.path.exists("crud.json"):        
+        with open("crud.json", "r") as f:
+            all_data = f.read()
+            if all_data != "":
+                print(all_data)
+                return
+    print("database is empty")
+
+
+def update_by_Id(id):
+    if os.path.exists("crud.json"):
+            
+        with open("crud.json", "r") as f:
+            all_data = json.load(f)
+
+            for data_to_update in all_data:
+                if data_to_update['id'] == id:
+                    
+                    data_to_update["username"] = input("update username: ")
+                    data_to_update["Email"] = input("update email: ")
+                    data_to_update["password"] = input("update password: ")
+                    
+                    with open("crud.json", 'w') as f:
+                        json.dump(all_data, f, indent=4)
+                    return
             else:
-                with open('crud.json','w'):
-                    create()
-        def read():
-            mo = (input("Enter your mo.number: "))
-            if len(mo) == 10:
-                with open("crud.json","r") as red:
-                    lo = json.load(red)
-                    if mo in lo:
-                        print()
-                        print(lo[mo])
-                    else:
-                        print()
-                        print('\033[1m','\033[91m',"Number does not exist: ",'\033[0m')
-                        read()
+                print("invalid input id")
+    else:
+        print("database is empty. Insert something first.")
+
+
+def delete_by_Id(id):
+    if os.path.exists("crud.json"):
+            
+        with open("crud.json", "r") as f:
+            all_data = json.load(f)
+
+            for data_to_delete in all_data:
+                if data_to_delete['id'] == id:
+                    all_data.remove(data_to_delete)
+                    with open('crud.json', "w") as f:
+                        json.dump(all_data, f, indent=4)
+                        print("data deleted successfully!")
+                    return
             else:
-                print()
-                print('\033[1m','\033[91m',"Number is  invalid: ",'\033[0m')
-                read()
-        def update():
-            v = (input('Which mo.number of data do you want to update: '))
-            if len(v) == 10:
-                with open("crud.json","r") as obj3:
-                    data = json.load(obj3)
-                    if v in data:
-                        a = {"name":input("Enter your name: "),"email":input("Enter your email: "),
-                             "address":input("Enter your address: ")}
-                        data[v] = a
-                        with open("crud.json","w") as obj4:
-                            json.dump(data,obj4,indent=4)
-                            print()
-                            print('\033[37m',"Updated Successfully.......",'\033[0m')
-                    else:
-                        print()
-                        print('\033[37m',"Your mo.number does not exist",'\033[0m')
-                        update()
-            else:
-                print()
-                print('\033[37m',"Please enter valid mo.number",'\033[0m')
-                update()
-        def delete():
-            with open("crud.json","r") as data:
-                d1 = json.load(data)
-            m = (input("Which mo.number of data do you want to delete: "))
-            if len(m) == 10:
-                if m in d1:
-                    d1.pop(m)
-                    with open("crud.json","w") as obj5:
-                        json.dump(d1,obj5,indent=4)
-                        print()
-                        print('\033[36m',"Successfully Deleted",'\033[0m')
-                else:
-                    print()
-                    print('\033[36m',"Number does not exist: ",'\033[0m')
-                    delete()
-            else:
-                print()
-                print('\033[36m',"Please enter valid mo.number",'\033[0m')
-                delete()
-        choice = int(input("Enter your choice: "))
-        if choice == 1:
-            create()
-        elif choice == 2:
-            read()
-        elif choice == 3:
-            update()
-        elif choice == 4:
-            delete()
-        else:
-            break
-    except:
-        print()
-        print('\033[37m',"Your mobail number does not exist",'\033[0m')
+                print("invalid input id")
+    else:
+        print("database is empty. Insert something first.")
+
+print("1) create \n2) Update_By_ID\n3) Read\n4) Delete_By_ID")
+choice = int(input("choose any one:-  "))
+
+if choice == 1:
+    if os.path.exists("crud.json"):
+        with open("crud.json", "r") as f:
+            all_data = json.load(f)
+            maxId = len(all_data)+1
+    else:
+        with open("crud.json","w") as f:
+            f.write('[]')
+            maxId = 1
+    create(maxId)
+
+elif choice==2:
+    id = int(input("Enter your id: "))
+    update_by_Id(id)
+
+elif choice == 3:
+    read_by_Id()
+
+elif choice == 4:
+    Id = int(input("Enter your id:-"))
+    delete_by_Id(Id)
+else:
+    print("invalid input:-") 
